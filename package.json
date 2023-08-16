@@ -1,0 +1,15 @@
+{
+  "name": "burn-bot",
+  "version": "1.0.0",
+  "description": "A Matrix bot that removes/burns messages after they have been red",
+  "main": "src/index.mjs",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "Matrix",
+    "burn-after-X"
+  ],
+  "author": "thomas.halwax@synacpoint.io",
+  "license": "MIT"
+}
