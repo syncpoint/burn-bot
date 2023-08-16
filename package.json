@@ -11,5 +11,10 @@
     "burn-after-X"
   ],
   "author": "thomas.halwax@synacpoint.io",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "dotenv": "^16.3.1",
+    "luxon": "^3.4.0",
+    "matrix-bot-sdk": "^0.6.6"
+  }
 }
