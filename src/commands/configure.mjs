@@ -62,7 +62,7 @@ export const configure = async (client, roomId, event) => {
   }
 }
 
-export const burnAfter = async (client, roomId) => {
+export const shouldBurn = async (client, roomId) => {
   if (!cache[roomId]) {
     const burn = await client.getRoomAccountData(ACCOUNT_DATA_TYPE, roomId)
     if (Object.keys(burn).length > 0) {
