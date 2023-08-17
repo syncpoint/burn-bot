@@ -19,7 +19,7 @@ config()
 LogService.setLogger(new RichConsoleLogger())
 
 // For now let's also make sure to log everything (for debugging)
-LogService.setLevel(LogLevel.DEBUG)
+LogService.setLevel(process.env.LOG_LEVEL || LogLevel.INFO)
 
 LogService.info('burn-bot starting up ...')
 
