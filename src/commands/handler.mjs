@@ -4,9 +4,9 @@ import { configure, shouldBurn } from './configure.mjs'
 import { COMMAND_PREFIX } from './shared.mjs'
 
 export default class CommandHandler {
-  constructor (matrixClient) {
+  constructor (matrixClient, store) {
     this.client = matrixClient
-    this.willBeBurning = []
+    this.store = store
   }
 
   async prepareProfile() {
@@ -29,21 +29,28 @@ export default class CommandHandler {
     // Set up the event handler
     this.client.on("room.message", this.onMessage.bind(this))
 
-    this.job = setInterval(async (client, candidates) => {
-        if (candidates.length === 0) return
-        const now = DateTime.now().toMillis()
+    const persistedBurners = await this.store.keys().all()
+    LogService.info(`There are ${persistedBurners.length} entries in the store. If this number is high there might be something wrong.`)
 
+    this.job = setInterval(async (client, store) => {
+        
+        const now = DateTime.now().toMillis()
+        const predicate = { lt: now }
         const burningJobs = []
-        while (candidates.length > 0 && candidates[0].burnAt <= now) {
-          const burner = candidates.shift()
-          burningJobs.push(client.redactEvent(burner.roomId, burner.eventId))
+        
+        for await (const burning of store.values(predicate)) {
+          burningJobs.push(client.redactEvent(burning.roomId, burning.eventId))
         }
-        // Maybe we should check the results and retry if it did not work?
-        await Promise.all(burningJobs)
+        
+        if (burningJobs.length > 0) {
+          // Maybe we should check the results and retry if it did not work?
+          await Promise.all(burningJobs)
+          await store.clear(predicate)
+        }       
       },
-      10 * 1000,  // run every 10 seconds
+      12 * 1000,  // run every 12 seconds
       this.client,
-      this.willBeBurning
+      this.store
     )
   }
 
@@ -64,8 +71,7 @@ export default class CommandHandler {
     duration[burn.after.quality] = burn.after.quantity
     const burnAt = DateTime.now().plus(duration)
 
-    this.willBeBurning.push({ roomId, eventId: ev.event_id, burnAt: burnAt.toMillis() })
-
-    LogService.debug(`Will burn event after ${burn.after.quantity} ${burn.after.quality}: ${burnAt.toISO()}`)
+    await this.store.put(burnAt.toMillis(), { roomId, eventId: ev.event_id })
+    this.client.sendReadReceipt(roomId, ev.event_id)
   }
 }
