@@ -1,18 +1,21 @@
 {
   "name": "burn-bot",
   "version": "1.0.0",
-  "description": "A Matrix bot that removes/burns messages after they have been red",
+  "description": "A Matrix bot that removes/burns messages after they have expired",
   "main": "src/index.mjs",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node src/index.mjs",
+    "login": "node src/login.mjs"
   },
   "keywords": [
     "Matrix",
     "burn-after-X"
   ],
-  "author": "thomas.halwax@synacpoint.io",
+  "author": "thomas.halwax@syncpoint.io",
   "license": "MIT",
   "dependencies": {
+    "commander": "^11.0.0",
     "dotenv": "^16.3.1",
     "level": "^8.0.0",
     "luxon": "^3.4.0",
