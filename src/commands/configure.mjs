@@ -47,6 +47,12 @@ export const configure = async (client, roomId, event) => {
         after: { quantity, quality: names[quality] }
       }
 
+      const canRedact = await client.userHasPowerLevelForAction(await client.getUserId(), roomId, 'redact')
+      if (!canRedact) {
+        client.replyNotice(roomId, event, 'Looks like I do not have enough power to redact events . Please elevate my powerlevel to "moderator" and issue the command again!')
+        return
+      }
+
       await client.setRoomAccountData(ACCOUNT_DATA_TYPE, roomId, burn)
       cache[roomId] = burn
 
