@@ -64,6 +64,11 @@ In order to make messages disappear you need to
 * invite the bot user to join a room. Since _auto-join_ is enabled the bot will accept every invitation.
 * elevate the permissions of the bot user to `moderator` level. Without doing so the bot will fail because removing messages requires appropriate power levels.
 
+## Restricting configuration to powerlevel "Moderator"
+
+I you want to limit the ability to make changes to users with the powerlevel of "Moderator" set the environment variable `MODERATORS_ONLY=1`. The bot will discharge all
+attempts to make changes and send a reply to the user.
+
 ## Interacting with the bot
 
 The bot listens for messages and acts on commands that start with `!burn`. The available commands are

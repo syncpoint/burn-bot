@@ -12,6 +12,14 @@ const cache = {}
 
 export const configure = async (client, roomId, event) => {
 
+  if (process.env.MODERATORS_ONLY === '1') {
+    const canRedact = await client.userHasPowerLevelForAction(event.sender, roomId, 'redact')
+    if (!canRedact) {
+      client.replyNotice(roomId, event, 'Sorry, only users with a powerlevel "moderator" are allowed to give me orders.')
+      return
+    }
+  }
+
   const args = event.textBody.substring(COMMAND_PREFIX.length).trim().split(' ')
 
   switch (args[0].toLowerCase()) {
