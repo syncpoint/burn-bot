@@ -25,7 +25,7 @@ export const configure = async ({ client, roomId, event, command, params }) => {
       await client.setRoomAccountData(ACCOUNT_DATA_TYPE, roomId, {})
       delete cache[roomId]
 
-      const message = 'OK, no more messages burning'
+      const message = 'OK, no more messages burning.'
       client.replyNotice(roomId, event, message)
       
       break
@@ -67,14 +67,10 @@ export const configure = async ({ client, roomId, event, command, params }) => {
       await client.setRoomAccountData(ACCOUNT_DATA_TYPE, roomId, burn)
       cache[roomId] = burn
 
-      const message = `OK, burning messages after ${quantity} ${names[quality]}`      
+      const message = `OK, burning messages after ${quantity} ${names[quality]}.`      
       client.replyNotice(roomId, event, message)
 
       break
-    }
-    default: {
-      const message = `unknown command: "${args[0]}".\n${help}`
-      client.replyNotice(roomId, event, message)
     }
   }
 }
