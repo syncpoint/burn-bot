@@ -33,11 +33,13 @@ if (missing.length) {
   process.exit(1)
 }
 
-const storagePath = path.join(process.cwd(), 'store', 'burn-bot.json')
+const dataDir = process.env.DATA_DIR ?? (path.join(process.cwd(), 'data'))
+
+const storagePath = path.join(dataDir, 'burn-bot.json')
 LogService.debug(`Initializing StorageProvider: ${storagePath}`)
 const storage = new SimpleFsStorageProvider(storagePath)
 
-const cryptoStoragePath = path.join(process.cwd(), 'store.crypto')
+const cryptoStoragePath = path.join(dataDir, 'crypto')
 LogService.debug(`Initializing CryptoStorageProvider: ${cryptoStoragePath}`)
 const cryptoStorage = new RustSdkCryptoStorageProvider(cryptoStoragePath)
 
@@ -45,7 +47,7 @@ const client = new MatrixClient(process.env.MATRIX_HOMESERVER_URL, process.env.M
 
 AutojoinRoomsMixin.setupOnClient(client)
 
-const burningStorage = new Level(path.join(process.cwd(), 'burning'), { valueEncoding: 'json' })
+const burningStorage = new Level(path.join(process.cwd(), 'jobs'), { valueEncoding: 'json' })
 const handler = new CommandHandler(client, burningStorage)
 await handler.start()
 await client.start()

@@ -1,9 +1,0 @@
-{
-  "rooms": {
-    "86af13c0b0ff05fefa8631339a6183d2596f839201eec788ebb7e1d802434ee107e41db459417382c5e66676631cb66554d4cd43c237fee92fbbb086dab523fb": {
-      "algorithm": "m.megolm.v1.aes-sha2",
-      "historyVisibility": "shared"
-    }
-  },
-  "deviceId": "JWINKTNRAK"
-}

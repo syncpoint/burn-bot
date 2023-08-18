@@ -94,5 +94,9 @@ not be sent as well.
 ### Configuration
 The configuration of the burning bot is stored in the rooms' `accountData`.
 
-### Jobs
-Which messages will be deleted and when is stored in a key-value store. If you restart the bot it will check for pending jobs and execute them.
+### SDK, Crypto, Jobs
+
+The preconfigured folder to store data is `./data`. If you want the bot to use an alternative location you can do so by setting `DATA_DIR=/path/to/an/alternative/location`.
+Everything the bots wants to persist goes into this folder.
+
+If you restart the bot it will check for pending jobs and execute them.

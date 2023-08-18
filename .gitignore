@@ -1,6 +1,4 @@
 node_modules/
-store/*.json
-store.crypto/*
-burning/
+data/
+.DS_Store
 .env
-
