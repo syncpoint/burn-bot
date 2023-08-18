@@ -10,7 +10,7 @@ const names = {
 
 const cache = {}
 
-export const configure = async (client, roomId, event) => {
+export const configure = async ({ client, roomId, event, command, params }) => {
 
   if (process.env.MODERATORS_ONLY === '1') {
     const canRedact = await client.userHasPowerLevelForAction(event.sender, roomId, 'redact')
@@ -20,9 +20,7 @@ export const configure = async (client, roomId, event) => {
     }
   }
 
-  const args = event.textBody.substring(COMMAND_PREFIX.length).trim().split(' ')
-
-  switch (args[0].toLowerCase()) {
+  switch (command) {
     case 'disable': {
       await client.setRoomAccountData(ACCOUNT_DATA_TYPE, roomId, {})
       delete cache[roomId]
@@ -33,17 +31,17 @@ export const configure = async (client, roomId, event) => {
       break
     }
     case 'after': {
-      if (!args[1]) {
+      if (!params[0]) {
         client.replyNotice(roomId, event, help)  
         break
       }
 
       /* only minutes, hours, days are supported */
       const pattern = /(\d{1,2})([m,h,d])/i
-      const matches = pattern.exec(args[1])
+      const matches = pattern.exec(params[0])
 
       if (!matches) {
-        const message = `No idea what ${args[1]} means.\n${help}`
+        const message = `No idea what ${params[0]} means.\n${help}`
         client.replyNotice(roomId, event, message)  
         break
       }
@@ -85,3 +83,9 @@ export const shouldBurn = async (client, roomId) => {
   }
   return cache[roomId]
 }
+
+export const CONFIG_COMMANDS = [
+  'after',
+  'disable',
+  'restrict'
+]

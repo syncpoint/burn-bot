@@ -2,6 +2,7 @@ import { LogService, MessageEvent, UserID } from 'matrix-bot-sdk'
 import { DateTime } from 'luxon'
 import { configure, shouldBurn } from './configure.mjs'
 import { COMMAND_PREFIX } from './shared.mjs'
+import { CONFIG_COMMANDS } from './configure.mjs'
 
 export default class CommandHandler {
   constructor (matrixClient, store) {
@@ -60,8 +61,21 @@ export default class CommandHandler {
     if (event.sender === this.userId) return
 
     if (event.textBody.startsWith(COMMAND_PREFIX)) {
-      await configure(this.client, roomId, event)
-      return
+      const args = event.textBody.substring(COMMAND_PREFIX.length).trim().split(' ')
+      const command = args[0]?.toLowerCase()
+      const params = args.slice(1)
+      if (CONFIG_COMMANDS.includes(command)) {
+        return configure({
+          client: this.client,
+          roomId,
+          event,
+          command,
+          params
+        })
+      } else {
+        this.client.replyNotice(roomId, event, 'Sorry, I do not understand.')
+      }
+      
     }
     
     const burn = await shouldBurn(this.client, roomId)
