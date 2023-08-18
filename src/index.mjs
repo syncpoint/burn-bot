@@ -11,7 +11,7 @@ import {
 import { config } from 'dotenv'
 import * as path from 'path'
 import { verify } from './environment.mjs'
-import CommandHandler from "./handler.mjs"
+import CommandHandler from "./commandhandler.mjs"
 import { Level } from 'level'
 
 config()
@@ -47,7 +47,8 @@ const client = new MatrixClient(process.env.MATRIX_HOMESERVER_URL, process.env.M
 
 AutojoinRoomsMixin.setupOnClient(client)
 
-const burningStorage = new Level(path.join(dataDir, 'jobs'), { valueEncoding: 'json' })
-const handler = new CommandHandler(client, burningStorage)
+const jobsStore = new Level(path.join(dataDir, 'jobs'), { valueEncoding: 'json' })
+const handler = new CommandHandler(client, jobsStore)
+
 await handler.start()
 await client.start()
