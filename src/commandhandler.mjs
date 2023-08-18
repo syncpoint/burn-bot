@@ -35,28 +35,48 @@ export default class CommandHandler {
 
     const persistedBurners = await this.store.keys().all()
     LogService.info(`There are ${persistedBurners.length} entries in the store. If this number is high there might be something wrong.`)
-
     
-
-    this.job = setInterval(async (client, store) => {
+    this.job = setInterval(async (client, store, logger) => {
         
         const now = DateTime.now().toMillis()
         const predicate = { lt: now }
-        const burningJobs = []
         
-        for await (const burning of store.values(predicate)) {
-          burningJobs.push(client.redactEvent(burning.roomId, burning.eventId))
-        }
+        const pending = await store.values(predicate).all()
+        const burningJobs = pending.map(job => client.redactEvent(job.roomId, job.eventId))
         
         if (burningJobs.length > 0) {
-          // Maybe we should check the results and retry if it did not work?
-          await Promise.all(burningJobs)
+          const results = await Promise.allSettled(burningJobs)
+          const rejected = results
+            .filter(result => result.status === 'rejected')
+            .find(result => result.reason.errcode === 'M_FORBIDDEN')
+          
+          if (rejected) {
+            logger.error('Some jobs were rejected! I\'ll purge the pending jobs anyway. Sorry!')
+            const affectedRooms = pending.reduce((acc, _, index) => {
+              if (results[index].status === 'fulfilled') return acc
+
+              if (!acc.includes(pending[index].roomId)) {
+                acc.push(pending[index].roomId)
+              }
+              return acc
+            }, [])
+            affectedRooms.forEach(roomId => {
+              logger.error(`Redaction was rejected in room ${roomId}`)
+              client.sendMessage(roomId, 
+                {
+                  msgtype: 'm.text',
+                  body: 'Hey, looks like I am not a moderator anymore. You can either elevate my powerlevel to "moderator" or disable me.'
+                }
+              )
+            })
+          }
           await store.clear(predicate)
         }       
       },
       12 * 1000,  // run every 12 seconds
       this.client,
-      this.store
+      this.store,
+      LogService
     )
   }
 

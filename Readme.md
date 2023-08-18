@@ -62,7 +62,10 @@ Just fire up `npm start`. If you'd like to increase the amount of log output you
 
 In order to make messages disappear you need to
 * invite the bot user to join a room. Since _auto-join_ is enabled the bot will accept every invitation.
-* elevate the permissions of the bot user to `moderator` level. Without doing so the bot will fail because removing messages requires appropriate power levels.
+* elevate the permissions of the bot user to `moderator` level. Without doing so the bot will fail because removing messages requires appropriate power levels. 
+The bot checks it's powerlevel on startup and complains about.
+
+
 ## Interacting with the bot
 
 The bot listens for messages and acts on commands that start with `!burn`. The available commands are
