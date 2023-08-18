@@ -47,7 +47,7 @@ const client = new MatrixClient(process.env.MATRIX_HOMESERVER_URL, process.env.M
 
 AutojoinRoomsMixin.setupOnClient(client)
 
-const burningStorage = new Level(path.join(process.cwd(), 'jobs'), { valueEncoding: 'json' })
+const burningStorage = new Level(path.join(dataDir, 'jobs'), { valueEncoding: 'json' })
 const handler = new CommandHandler(client, burningStorage)
 await handler.start()
 await client.start()
