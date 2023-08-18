@@ -59,6 +59,11 @@ export const configure = async ({ client, roomId, event, command, params }) => {
         return
       }
 
+      if (quantity < 1) {
+        client.replyNotice(roomId, event, `Sorry, ${quantity} is not valid.`)
+        return
+      }
+
       await client.setRoomAccountData(ACCOUNT_DATA_TYPE, roomId, burn)
       cache[roomId] = burn
 
