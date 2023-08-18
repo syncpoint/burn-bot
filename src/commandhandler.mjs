@@ -35,7 +35,7 @@ export default class CommandHandler {
 
     const persistedBurners = await this.store.keys().all()
     LogService.info(`There are ${persistedBurners.length} entries in the store. If this number is high there might be something wrong.`)
-    
+
     this.job = setInterval(async (client, store, logger) => {
         
         const now = DateTime.now().toMillis()
@@ -83,7 +83,6 @@ export default class CommandHandler {
   async onMessage(roomId, ev) {
     const event = new MessageEvent(ev)
     if (event.isRedacted) return // Ignore redacted events that come through
-    if (event.sender === this.userId) return
 
     if (event.textBody.startsWith(COMMAND_PREFIX)) {
       const args = event.textBody.substring(COMMAND_PREFIX.length).trim().split(' ')
@@ -96,7 +95,6 @@ export default class CommandHandler {
       } else {
         this.client.replyNotice(roomId, event, 'Sorry, I do not understand.')
       }
-      return
     }
     
     const burn = await this.configuration.get(roomId)

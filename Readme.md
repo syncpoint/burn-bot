@@ -3,7 +3,7 @@
 In contrary to other messaging systems Matrix does not support vanishing messages where messages in a room (or group) disappear after a given time.
 The _burning bot_ aims to solve this issue and implements a very simple strategy where messages are redacted (aka deleted) after a configurable period of time.
 
-The bot will check periodically (currently five times per minute) if there are messages to delete.
+The bot will check periodically (currently five times per minute) if there are messages to delete. Interactions with the bot and its replies are affected as well.
 
 __Warning__: This bot is neither designed for rooms with a high number of members nor for handling a huge amount of messages.
 
@@ -63,8 +63,7 @@ Just fire up `npm start`. If you'd like to increase the amount of log output you
 In order to make messages disappear you need to
 * invite the bot user to join a room. Since _auto-join_ is enabled the bot will accept every invitation.
 * elevate the permissions of the bot user to `moderator` level. Without doing so the bot will fail because removing messages requires appropriate power levels. 
-The bot checks it's powerlevel on startup and complains about.
-
+The bot checks it's powerlevel on startup and complains about. It will post a message if you decided to take away the powerlevel whil the bot is up-and-running.
 
 ## Interacting with the bot
 
