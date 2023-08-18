@@ -1,4 +1,4 @@
-import { ACCOUNT_DATA_TYPE, COMMAND_PREFIX } from "./shared.mjs"
+import { POLICIES } from "./shared.mjs"
 
 const help = 'You need to specify the lifetime of the messages. Like "after 10m" (for 10 minutes) or "after 1h" (for one hour). I support [m]inutes, [h]ours and [d]ays'
 
@@ -8,22 +8,23 @@ const names = {
   d: 'days'
 }
 
-const cache = {}
+const buildHandler = (client, configuration) => async ({ roomId, event, command, params }) => {
 
-export const configure = async ({ client, roomId, event, command, params }) => {
+  const policy = (await configuration.get(roomId))?.policy ?? (process.env.POLICY ?? POLICIES.RELAXED)
+  const hasPermission = (policy.toLowerCase() === POLICIES.RELAXED)
+    ? true
+    : await client.userHasPowerLevelForAction(event.sender, roomId, 'redact')
 
-  if (process.env.MODERATORS_ONLY === '1') {
-    const canRedact = await client.userHasPowerLevelForAction(event.sender, roomId, 'redact')
-    if (!canRedact) {
-      client.replyNotice(roomId, event, 'Sorry, only users with a powerlevel "moderator" are allowed to give me orders.')
-      return
-    }
+  if (!hasPermission) {
+    client.replyNotice(roomId, event, 'Sorry, only users with a powerlevel of at least "moderator" are allowed to give me orders.')
+    return
   }
 
   switch (command) {
     case 'disable': {
-      await client.setRoomAccountData(ACCOUNT_DATA_TYPE, roomId, {})
-      delete cache[roomId]
+      const settings = await configuration.get(roomId)
+      delete settings.after
+      await configuration.put(roomId, settings)
 
       const message = 'OK, no more messages burning.'
       client.replyNotice(roomId, event, message)
@@ -34,6 +35,12 @@ export const configure = async ({ client, roomId, event, command, params }) => {
       if (!params[0]) {
         client.replyNotice(roomId, event, help)  
         break
+      }
+
+      const canRedact = await client.userHasPowerLevelForAction(await client.getUserId(), roomId, 'redact')
+      if (!canRedact) {
+        client.replyNotice(roomId, event, 'Looks like I do not have enough power to redact events . Please elevate my powerlevel to "moderator" and issue the command again!')
+        return
       }
 
       /* only minutes, hours, days are supported */
@@ -49,44 +56,44 @@ export const configure = async ({ client, roomId, event, command, params }) => {
       const quantity = matches[1]
       const quality = matches[2]
 
-      const burn = { 
-        after: { quantity, quality: names[quality] }
-      }
-
-      const canRedact = await client.userHasPowerLevelForAction(await client.getUserId(), roomId, 'redact')
-      if (!canRedact) {
-        client.replyNotice(roomId, event, 'Looks like I do not have enough power to redact events . Please elevate my powerlevel to "moderator" and issue the command again!')
-        return
-      }
-
       if (quantity < 1) {
         client.replyNotice(roomId, event, `Sorry, ${quantity} is not valid.`)
         return
       }
 
-      await client.setRoomAccountData(ACCOUNT_DATA_TYPE, roomId, burn)
-      cache[roomId] = burn
+      const settings = await configuration.get(roomId)
+      settings.after = { quantity, quality: names[quality] }
+      await configuration.put(roomId, settings)
 
       const message = `OK, burning messages after ${quantity} ${names[quality]}.`      
       client.replyNotice(roomId, event, message)
 
       break
     }
-  }
-}
-
-export const shouldBurn = async (client, roomId) => {
-  if (!cache[roomId]) {
-    const burn = await client.getRoomAccountData(ACCOUNT_DATA_TYPE, roomId)
-    if (Object.keys(burn).length > 0) {
-      cache[roomId] = burn
+    case 'restrict': {
+      const settings = await configuration.get(roomId)
+      settings.policy = POLICIES.RESTRICTED
+      await configuration.put(roomId, settings)
+      client.replyNotice(roomId, event, `OK, the policy regarding changes to the configuration is set to ${settings.policy}.`)
+      break
+    }
+    case 'relax': {
+      const settings = await configuration.get(roomId)
+      settings.policy = POLICIES.RELAXED
+      await configuration.put(roomId, settings)
+      client.replyNotice(roomId, event, `OK, the policy regarding changes to the configuration is set to ${settings.policy}.`)
+      break
     }
   }
-  return cache[roomId]
 }
 
-export const CONFIG_COMMANDS = [
-  'after',
-  'disable',
-  'restrict'
-]
+export const register = (client, configuration, handler) => {
+  const configure = buildHandler(client, configuration)
+  const commands = [
+    'after',
+    'disable',
+    'restrict',
+    'relax'
+  ]
+  commands.forEach(command => handler[command] = configure)
+}

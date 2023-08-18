@@ -11,7 +11,7 @@ import {
 import { config } from 'dotenv'
 import * as path from 'path'
 import { verify } from './environment.mjs'
-import CommandHandler from "./commands/handler.mjs"
+import CommandHandler from "./handler.mjs"
 import { Level } from 'level'
 
 config()

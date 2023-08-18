@@ -63,22 +63,26 @@ Just fire up `npm start`. If you'd like to increase the amount of log output you
 In order to make messages disappear you need to
 * invite the bot user to join a room. Since _auto-join_ is enabled the bot will accept every invitation.
 * elevate the permissions of the bot user to `moderator` level. Without doing so the bot will fail because removing messages requires appropriate power levels.
-
-## Restricting configuration to powerlevel "Moderator"
-
-I you want to limit the ability to make changes to users with the powerlevel of "Moderator" set the environment variable `MODERATORS_ONLY=1`. The bot will discharge all
-attempts to make changes and send a reply to the user.
-
 ## Interacting with the bot
 
 The bot listens for messages and acts on commands that start with `!burn`. The available commands are
+* `!burn status` returns the current configuration and will tell you if burning messages is enabled and if so it will show the time-to-live.
+
 * `!burn after <quantity><quality>`: where 
-  `<quantity>` is a positive interger > 0
-  `<quality>` is one out of [m,h,d] (minutes, hours, days)
+  `<quantity>` is a positive interger and 
+  `<quality>` is one out of `[m,h,d]` (minutes, hours, days)
 
   If you want to set the time-to-live for messages to 15 minutes post `!burn after 15m`. The bot will confirm your command if it was successful or send an error message otherwise.
 
 * `!burn disable`: Disables burning messages for the current room. This affects only messages that are sent AFTER disabling the bot. Messages that are already marked for deletion will be deleted anyway.
+
+* `!burn restrict`: Enforces the powerlevel requirement for the current room to be at least "Moderator".
+* `!burn relax`: Removes the powerlevel requirement for the current room to be at least "Moderator".
+
+## Powerlevel Mode
+
+You can configure the bot's behaviour regarding the enforcement of the powerlevel required to change the configuration. The default policy is `relaxed` so anyone in
+the room can make changes to the configuration. If you want to change the default behaviour set the environment variable `POLICY=restricted`.
 
 ## Read receipts
 
