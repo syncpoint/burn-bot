@@ -28,7 +28,7 @@ npm install
 ### Container environment
 
 ```bash
-docker pull syncpoint/burn-bot
+docker pull ghcr.io/syncpoint/burn-bot
 ``````
 
 ## Configuration
