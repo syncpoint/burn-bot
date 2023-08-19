@@ -39,7 +39,7 @@ is an access token of the user you want to use.
 In order to generate an access token you can run
 
   * native environment: `npm run login`
-  * dockerized environment: `docker run -it --rm syncpoint/burn-bot login`
+  * dockerized environment: `docker run -it --rm ghcr.io/syncpoint/burn-bot login`
 
 ```
 
@@ -58,7 +58,7 @@ Options:
 
 or
 
-`docker run -it --rm syncpoint/burn-bot login https://matrix.your-homeserver.url @your-bot-name:your-homeserver.url **secret**`
+`docker run -it --rm ghcr.io/syncpoint/burn-bot login https://matrix.your-homeserver.url @your-bot-name:your-homeserver.url **secret**`
 
 On success you will be provided with the environment variables mentioned above:
 
@@ -79,7 +79,7 @@ If you prefer the container just call
 docker run -d \
   -e MATRIX_HOMESERVER_URL=https://matrix.your-homeserver.url \
   -e MATRIX_ACCESS_TOKEN=syt_bGlz*************************1g6HqF \
-  syncpoint/burn-bot
+  ghcr.io/syncpoint/burn-bot
 ```
 
 In order to keep the bot's data we __highly recommend__ mapping the `DATA_DIR` to a distinct volume/folder:
@@ -92,7 +92,7 @@ docker run
   -v ./.env:/usr/src/app
   -v burn-bot-data:/data
   -e DATA_DIR=/data
-  syncpoint/burn-bot
+  ghcr.io/syncpoint/burn-bot
 ```
 
 ## Making it work
