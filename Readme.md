@@ -13,6 +13,8 @@ Since this is implemented as a bot it needs a dedicated user account with the ap
 
 ## Installing
 
+### Native environment
+
 The bot is written in JavaScript and needs the NodeJS runtime version 16 or newer:
 
 ```bash
@@ -21,14 +23,23 @@ cd burn-bot
 npm install
 ```
 
+### Container environment
+
+```bash
+docker pull syncpoint/burn-bot
+``````
+
 ## Configuration
 
 To make the bot work you need to provide values for two environment variables `MATRIX_HOMESERVER_URL` (is the url of your matrix homeserver) and `MATRIX_ACCESS_TOKEN` 
 is an access token of the user you want to use.
 
-In order to generate an access token call `npm run login` with the required parameters:
+In order to generate an access token you can run
+
+  * native environment: `npm run login`
+  * dockerized environment: `docker run -it --rm syncpoint/burn-bot login`
+
 ```
-npm run login --help
 
 Usage: login [options] <homeserverUrl> <userId> <password>
 
@@ -41,9 +52,11 @@ Options:
   -h, --help     display help for command
 ```
 
-```
-npm run login https://matrix.your-homeserver.url @your-bot-name:your-homeserver.url **secret**
-```
+`npm run login https://matrix.your-homeserver.url @your-bot-name:your-homeserver.url **secret**`
+
+or
+
+`docker run -it --rm syncpoint/burn-bot login https://matrix.your-homeserver.url @your-bot-name:your-homeserver.url **secret**`
 
 On success you will be provided with the environment variables mentioned above:
 
@@ -52,11 +65,39 @@ MATRIX_HOMESERVER_URL=https://matrix.your-homeserver.url
 MATRIX_ACCESS_TOKEN=syt_bGlz*************************1g6HqF
 ```
 
-You may persist these environment variables by making use of a `.env` file.
+If you use a native environment or prefer `docker-compose` you may persist these environment variables by making use of a `.env` file.
 
 ## Running the bot
 
 Just fire up `npm start`. If you'd like to increase the amount of log output you can do so by giving the environment variable `LOG_LEVEL` a value of `DEBUG`.
+
+If you prefer the container just call
+
+```
+docker run -d \
+  -e MATRIX_HOMESERVER_URL=https://matrix.your-homeserver.url \
+  -e MATRIX_ACCESS_TOKEN=syt_bGlz*************************1g6HqF \
+  syncpoint/burn-bot
+```
+
+or (even better)
+
+```
+docker run -d \
+  -v ./.env:/usr/src/app
+  syncpoint/burn-bot
+```
+
+In order to keep the bot's data we highly recommend mapping the `DATA_DIR` to a distinct volume/folder:
+
+```
+docker create volume burn-bot-data
+docker run -d \
+  -v ./.env:/usr/src/app
+  -v burn-bot-data:/data
+  -e DATA_DIR=/data
+  syncpoint/burn-bot
+```
 
 ## Making it work
 
