@@ -8,8 +8,12 @@ class Configuration {
 
   get = async (roomId) => {
     if (!this.cache[roomId]) {
-      const remote = await this.client.getRoomAccountData(ACCOUNT_DATA_TYPE, roomId)
-      this.cache[roomId] = (remote ?? {})
+      try {
+        const remote = await this.client.getRoomAccountData(ACCOUNT_DATA_TYPE, roomId)
+        this.cache[roomId] = (remote ?? {})
+      } catch (error) {
+        this.cache[roomId] = {}
+      }
     }
     return this.cache[roomId]
   }
