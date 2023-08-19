@@ -82,16 +82,7 @@ docker run -d \
   syncpoint/burn-bot
 ```
 
-or (even better)
-
-```
-docker run 
-  -d
-  -v ./.env:/usr/src/app
-  syncpoint/burn-bot
-```
-
-In order to keep the bot's data we highly recommend mapping the `DATA_DIR` to a distinct volume/folder:
+In order to keep the bot's data we __highly recommend__ mapping the `DATA_DIR` to a distinct volume/folder:
 
 ```
 docker volume create burn-bot-data
