@@ -7,6 +7,8 @@ The bot will check periodically (currently five times per minute) if there are m
 
 __Warning__: This bot is neither designed for rooms with a high number of members nor for handling a huge amount of messages.
 
+![Burn-Bot-inAction](demo/Schildi-Chat-with-Burn-Bot.jpg?raw=true)
+
 ## Prerequisits
 
 Since this is implemented as a bot it needs a dedicated user account with the appropriate permissions to do it's job.
@@ -83,7 +85,8 @@ docker run -d \
 or (even better)
 
 ```
-docker run -d \
+docker run 
+  -d
   -v ./.env:/usr/src/app
   syncpoint/burn-bot
 ```
@@ -91,8 +94,10 @@ docker run -d \
 In order to keep the bot's data we highly recommend mapping the `DATA_DIR` to a distinct volume/folder:
 
 ```
-docker create volume burn-bot-data
-docker run -d \
+docker volume create burn-bot-data
+docker run 
+  -d
+  --name burn-bot
   -v ./.env:/usr/src/app
   -v burn-bot-data:/data
   -e DATA_DIR=/data
