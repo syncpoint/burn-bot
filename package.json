@@ -1,6 +1,6 @@
 {
   "name": "@syncpoint/burn-bot",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "A Matrix bot that removes/burns messages after they have expired",
   "main": "src/index.mjs",
   "scripts": {
