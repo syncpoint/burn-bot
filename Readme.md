@@ -1,9 +1,16 @@
 # The burn-bot
 
-In contrary to other messaging systems Matrix does not support vanishing messages where messages in a room (or group) disappear after a given time.
-The _burning bot_ aims to solve this issue and implements a very simple strategy where messages are redacted (aka deleted) after a configurable period of time.
+In contrary to other messaging systems Matrix does currently not support vanishing messages where messages in a room (or group) disappear after a given time.
+The _burn-bot_ aims to solve this issue and implements a very simple strategy where messages are redacted (aka deleted) after a configurable period of time.
 
-The bot will check periodically (currently five times per minute) if there are messages to delete. Interactions with the bot and its replies are affected as well.
+The _burn-bot_ is configured on a _per room level_ There is currently no way to specify a TTL for specific messages.
+
+> Please note that there are at least two MSC that address the issue of self-destruction messages (either on a per room or per message level). As soon as
+[MSC 1762 - Configurable Retention Periods](https://github.com/matrix-org/matrix-spec-proposals/blob/matthew/msc1763/proposals/1763-configurable-retention-periods.md)
+will be part of the spec this bot will become obsolete.
+
+The bot will check periodically (currently five times per minute) if there are messages to delete. Interactions with the bot and its replies are affected as well. State
+events are _not affected_!
 
 __Warning__: This bot is neither designed for rooms with a high number of members nor for handling a huge amount of messages.
 
@@ -99,8 +106,8 @@ docker run
 
 In order to make messages disappear you need to
 * invite the bot user to join a room. Since _auto-join_ is enabled the bot will accept every invitation.
-* elevate the permissions of the bot user to `moderator` level. Without doing so the bot will fail because removing messages requires appropriate power levels. 
-The bot checks it's powerlevel on startup and complains about. It will post a message if you decided to take away the powerlevel while the bot is up-and-running.
+* elevate the permissions of the bot user to be greater than or equal to the `m.room.redaction` event power level (sometimes called `Moderator` level). Without doing so the bot will fail because removing messages requires appropriate power levels. 
+The bot checks it's power level on startup and complains about. It will post a message if you decided to take away the power level while the bot is up-and-running.
 
 ## Commands
 
@@ -115,12 +122,12 @@ The bot listens for messages and acts on commands that start with `!burn`. The a
 
 * `!burn disable`: Disables burning messages for the current room. This affects only messages that are sent AFTER disabling the bot. Messages that are already marked for deletion will be deleted anyway.
 
-* `!burn restrict`: Enforces the powerlevel requirement to make changes to the bot's configuration for the current room to be at least `Moderator`. This way you can prevent other users with a powerlevel of `Standard` from making changes to the bot's configuration.
-* `!burn relax`: Removes the powerlevel requirement for the current room to be at least `Moderator`.
+* `!burn restrict`: Enforces the power level requirement to make changes to the bot's configuration for the current room to be at least the same as to redact messages (`Moderator`). This way you can prevent other users with a lower power level from making changes to the bot's configuration.
+* `!burn relax`: Removes the power level requirement for the current room to be at least the same as to redact messages (`Moderator`).
 
-## Powerlevel Mode
+## power level Policy
 
-You can configure the bot's behaviour regarding the enforcement of the powerlevel required to change the configuration. The default policy is `relaxed` so anyone in
+You can configure the bot's behaviour regarding the enforcement of the power level required to change the configuration. The default policy is `relaxed` so anyone in
 the room can make changes to the configuration. If you want to change the default behaviour set the environment variable `POLICY=restricted`.
 
 The order of application of the policy is
