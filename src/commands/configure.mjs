@@ -16,7 +16,7 @@ const buildHandler = (client, configuration) => async ({ roomId, event, command,
     : await client.userHasPowerLevelForAction(event.sender, roomId, 'redact')
 
   if (!hasPermission) {
-    client.replyNotice(roomId, event, 'Sorry, only users with a powerlevel of at least "moderator" are allowed to give me orders.')
+    client.replyNotice(roomId, event, 'Sorry, only users with a power level greater than or equal to the "m.room.redaction" event power level are allowed to give me orders.')
     return
   }
 
@@ -39,7 +39,9 @@ const buildHandler = (client, configuration) => async ({ roomId, event, command,
 
       const canRedact = await client.userHasPowerLevelForAction(await client.getUserId(), roomId, 'redact')
       if (!canRedact) {
-        client.replyNotice(roomId, event, 'Looks like I do not have enough power to redact events . Please elevate my powerlevel to "moderator" and issue the command again!')
+        client.replyNotice(roomId, event, 'Looks like I do not have enough power to redact events . Please elevate\
+         my power level to be greater than or equal to the "m.room.redaction" event power level and issue the command again!\
+        One way of doing so might be assigning the role "Moderator" to me.') 
         return
       }
 
