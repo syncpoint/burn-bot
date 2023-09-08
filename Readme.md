@@ -96,7 +96,7 @@ docker volume create burn-bot-data
 docker run 
   -d
   --name burn-bot
-  -v ./.env:/usr/src/app
+  -v ./.env:/usr/src/app/.env
   -v burn-bot-data:/data
   -e DATA_DIR=/data
   ghcr.io/syncpoint/burn-bot
