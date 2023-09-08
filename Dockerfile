@@ -11,9 +11,9 @@ COPY package*.json ./
 
 RUN npm ci --omit=dev
 # Bundle app source
-COPY  . .
+COPY  ./src/ .
 
-RUN ln -s /usr/src/app/src/login.mjs /usr/src/app/login
+RUN ln -s /usr/src/app/login.mjs /usr/src/app/login
 
 ENTRYPOINT [ "node" ]
-CMD [ "./src/index.mjs" ]
+CMD [ "./index.mjs" ]
