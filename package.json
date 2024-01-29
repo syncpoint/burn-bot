@@ -19,6 +19,6 @@
     "dotenv": "^16.3.1",
     "level": "^8.0.0",
     "luxon": "^3.4.0",
-    "matrix-bot-sdk": "^0.6.6"
+    "matrix-bot-sdk": "^0.7.1"
   }
 }
